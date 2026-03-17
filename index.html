@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build Websites with Lucy | Social Grenade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #183159;
+      --teal: #38c2d6;
+      --teal-dark: #108ea0;
+      --ink: #23223d;
+      --bg: #0f1728;
+      --panel: rgba(255,255,255,0.05);
+      --panel-border: rgba(56,194,214,0.18);
+      --text: #f4f7fb;
+      --muted: rgba(244,247,251,0.72);
+      --line: rgba(255,255,255,0.08);
+      --shadow: 0 20px 50px rgba(0,0,0,0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(56,194,214,0.16), transparent 28%),
+        linear-gradient(180deg, #10203a 0%, #0c1323 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: rgba(12, 19, 35, 0.7);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .logo-wrap img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      padding: 0.35rem;
+    }
+
+    .logo-text {
+      line-height: 1;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.06em;
+    }
+
+    .logo-text span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover { color: var(--teal); }
+
+    section { padding: 5.5rem 0; }
+
+    .hero {
+      min-height: 86vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid rgba(56,194,214,0.35);
+      border-radius: 999px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    h1, h2, h3, h4 {
+      line-height: 0.96;
+      text-transform: uppercase;
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      font-size: clamp(3.4rem, 8vw, 6.8rem);
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 760px;
+      font-size: 1.08rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.95rem 1.25rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 800;
+      border: 1px solid transparent;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: var(--navy);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      border-color: rgba(56,194,214,0.28);
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .stat {
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 1.25rem;
+    }
+
+    .stat-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      color: var(--teal);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.35rem;
+    }
+
+    .hero-panel,
+    .card,
+    .step,
+    .example-card,
+    .pipeline-card,
+    .prompt-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel {
+      padding: 1.6rem;
+    }
+
+    .hero-panel img {
+      width: 100%;
+      max-width: 240px;
+      display: block;
+      margin: 0 auto 1rem;
+      object-fit: contain;
+    }
+
+    .hero-panel h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--teal);
+    }
+
+    .hero-panel ul {
+      list-style: none;
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .hero-panel li {
+      color: var(--muted);
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .hero-panel li::before,
+    .step li::before,
+    .example-card li::before,
+    .prompt-card li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--teal);
+    }
+
+    .section-head {
+      margin-bottom: 2rem;
+      max-width: 860px;
+    }
+
+    .section-head .eyebrow { margin-bottom: 0.8rem; }
+    .section-head h2 { font-size: clamp(2.4rem, 5vw, 4.4rem); margin-bottom: 0.8rem; }
+    .section-head p { color: var(--muted); font-size: 1.03rem; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      padding: 1.5rem;
+    }
+
+    .card h3 {
+      font-size: 1.8rem;
+      margin-bottom: 0.8rem;
+      color: var(--teal);
+    }
+
+    .card p,
+    .card li,
+    .step p,
+    .example-card p,
+    .pipeline-card p,
+    .prompt-card p {
+      color: var(--muted);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .step {
+      padding: 1.35rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-num {
+      font-family: 'Space Mono', monospace;
+      color: var(--teal);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .step h3 {
+      font-size: 1.6rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .step ul,
+    .example-card ul,
+    .prompt-card ul {
+      list-style: none;
+      display: grid;
+      gap: 0.55rem;
+      margin-top: 1rem;
+    }
+
+    .step li,
+    .example-card li,
+    .prompt-card li {
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .pipeline-card {
+      padding: 1.1rem;
+      text-align: center;
+    }
+
+    .pipeline-card .mini {
+      font-family: 'Space Mono', monospace;
+      color: var(--teal);
+      font-size: 0.75rem;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+    }
+
+    .pipeline-card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .example-card,
+    .prompt-card {
+      padding: 1.5rem;
+    }
+
+    .example-card h3,
+    .prompt-card h3 {
+      font-size: 1.85rem;
+      margin-bottom: 0.75rem;
+      color: var(--teal);
+    }
+
+    .example-tag {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--teal);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .callout {
+      border-left: 4px solid var(--teal);
+      background: rgba(255,255,255,0.04);
+      border-radius: 0 16px 16px 0;
+      padding: 1.25rem 1.3rem;
+      color: var(--muted);
+      margin-top: 1.5rem;
+    }
+
+    .footer {
+      padding: 4rem 0 5rem;
+      text-align: center;
+      border-top: 1px solid var(--line);
+    }
+
+    .footer h2 {
+      font-size: 2.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .footer p {
+      color: var(--muted);
+      max-width: 720px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .small {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid,
+      .grid-2,
+      .grid-3,
+      .examples,
+      .steps,
+      .pipeline {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-inner { align-items: flex-start; flex-direction: column; }
+      .nav-links { gap: 0.8rem; }
+      .hero-grid,
+      .grid-2,
+      .grid-3,
+      .examples,
+      .steps,
+      .pipeline,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+      .hero { min-height: auto; padding-top: 3rem; }
+      section { padding: 4rem 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+
+  <nav>
+    <div class="container nav-inner">
+      <div class="logo-wrap">
+        <img src="assets/social-grenade/logo-navy.png" alt="Social Grenade logo" />
+        <div class="logo-text">
+          <strong>Build with Lucy</strong>
+          <span>Social Grenade deployment workflow</span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#how">How It Works</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#examples">Agency Examples</a>
+        <a href="#prompts">What to Ask</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">Website Creation Workflow</div>
+        <h1>Robin's Team Can Build and Deploy Websites With Lucy</h1>
+        <p>
+          Lucy can help your team go from idea → page structure → copy → branded design → GitHub repo → live Vercel deployment.
+          That means faster launches, cleaner handoffs, and fewer good ideas dying in a notes app.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#how">See the Process</a>
+          <a class="btn btn-secondary" href="#examples">See Agency Examples</a>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Agency Use Cases</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">GitHub</div>
+            <div class="stat-label">Version Control Ready</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">Vercel</div>
+            <div class="stat-label">Live Deployment Ready</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <img src="assets/social-grenade/logo-teal.png" alt="Social Grenade teal logo" />
+        <h3>What Lucy Handles</h3>
+        <ul>
+          <li>Drafts page structure, copy, messaging, and CTAs</li>
+          <li>Builds standalone web pages and front-end prototypes</li>
+          <li>Creates repos, commits files, and pushes changes</li>
+          <li>Links projects to Vercel and deploys them live</li>
+          <li>Updates pages after team feedback and redeploys</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">How It Works</div>
+        <h2>Here’s the Real Workflow</h2>
+        <p>
+          This is not “AI magic.” It’s a practical production loop. Robin or the team gives Lucy a goal, brand direction, and rough outcome. Lucy builds the page, stages the files, pushes to GitHub, and deploys to Vercel.
+        </p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">Step 01</div>
+          <h3>Give Lucy the Goal</h3>
+          <p>Tell Lucy what kind of page you want, who it’s for, what brand it belongs to, and what action the visitor should take.</p>
+          <ul>
+            <li>Landing page</li>
+            <li>Lead magnet page</li>
+            <li>Case study page</li>
+            <li>Internal team resource page</li>
+          </ul>
+        </div>
+
+        <div class="step">
+          <div class="step-num">Step 02</div>
+          <h3>Lucy Builds the Page</h3>
+          <p>Lucy writes the copy, lays out the sections, applies brand styling, and builds the front-end files in the workspace.</p>
+          <ul>
+            <li>Headlines + messaging</li>
+            <li>Section layout</li>
+            <li>Brand colors and fonts</li>
+            <li>Examples, CTAs, proof blocks</li>
+          </ul>
+        </div>
+
+        <div class="step">
+          <div class="step-num">Step 03</div>
+          <h3>Push to GitHub</h3>
+          <p>Once approved, Lucy can create a new repository or update an existing one, commit the files, and push the changes.</p>
+          <ul>
+            <li>Repo creation</li>
+            <li>Commit history</li>
+            <li>Version control</li>
+            <li>Safe iteration</li>
+          </ul>
+        </div>
+
+        <div class="step">
+          <div class="step-num">Step 04</div>
+          <h3>Deploy to Vercel</h3>
+          <p>Lucy links the repo or project to Vercel, deploys it live, and can update it again when the team wants revisions.</p>
+          <ul>
+            <li>Live preview or production deploy</li>
+            <li>Rapid changes after review</li>
+            <li>Clean web publishing pipeline</li>
+            <li>Real URLs, not just drafts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pipeline">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Pipeline</div>
+        <h2>From Idea to Live Site</h2>
+        <p>
+          This is the exact chain your team can use when you want something built fast without losing structure.
+        </p>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipeline-card">
+          <div class="mini">01</div>
+          <h3>Brief</h3>
+          <p>Give Lucy the goal, audience, and brand.</p>
+        </div>
+        <div class="pipeline-card">
+          <div class="mini">02</div>
+          <h3>Build</h3>
+          <p>Lucy creates the web page in the workspace.</p>
+        </div>
+        <div class="pipeline-card">
+          <div class="mini">03</div>
+          <h3>Review</h3>
+          <p>Robin or the team gives revision notes.</p>
+        </div>
+        <div class="pipeline-card">
+          <div class="mini">04</div>
+          <h3>Push</h3>
+          <p>Lucy commits to GitHub and preserves history.</p>
+        </div>
+        <div class="pipeline-card">
+          <div class="mini">05</div>
+          <h3>Deploy</h3>
+          <p>Lucy ships it to Vercel and updates it live.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Important:</strong> this workflow works best when the team gives Lucy a clear purpose, target audience, brand, and call-to-action. The better the brief, the stronger the first version.
+      </div>
+    </div>
+  </section>
+
+  <section id="examples">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Agency Examples</div>
+        <h2>How Both Agencies Could Use This</h2>
+        <p>
+          Same deployment engine. Different business goals. Here’s how Robin’s team could use Lucy for both sides of the business.
+        </p>
+      </div>
+
+      <div class="examples">
+        <div class="example-card">
+          <div class="example-tag">SCP Agency</div>
+          <h3>Web Pages for Client Marketing</h3>
+          <p>SCP Agency can use Lucy to rapidly build pages that support sales, lead generation, and campaign execution.</p>
+          <ul>
+            <li>Client campaign landing pages</li>
+            <li>Seasonal promo pages for dealerships</li>
+            <li>Lead capture pages for offers or giveaways</li>
+            <li>Case study pages showing agency wins</li>
+            <li>Service pages for SCP’s own website</li>
+          </ul>
+        </div>
+
+        <div class="example-card">
+          <div class="example-tag">Social Grenade</div>
+          <h3>Product, Training, and Sales Pages</h3>
+          <p>Social Grenade can use Lucy to create pages that drive product adoption, explain offers, and support Academy-style education.</p>
+          <ul>
+            <li>Training registration pages</li>
+            <li>Feature highlight pages for sales teams</li>
+            <li>Demo request landing pages</li>
+            <li>Academy event or guest speaker pages</li>
+            <li>Recruiting or onboarding pages for dealers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container grid-2">
+      <div class="card">
+        <div class="eyebrow">Why This Helps Robin</div>
+        <h3>Less Bottleneck. More Shipping.</h3>
+        <p>
+          Robin doesn’t need every web page to start from scratch or get stuck waiting for perfect first drafts. Lucy can build the first solid version fast, package it cleanly, and make changes after feedback.
+        </p>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Why This Helps the Team</div>
+        <h3>Clearer Handoffs. Cleaner Execution.</h3>
+        <p>
+          Instead of loose ideas bouncing around chat, the team gets an actual page, in a repo, on a live URL. That makes review easier and execution cleaner for ops, creative, and leadership.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="prompts">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">What to Ask Lucy</div>
+        <h2>Prompt Examples the Team Can Use</h2>
+        <p>
+          Keep it simple. Lucy does better with direct briefs than vague “make something cool” requests.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="prompt-card">
+          <h3>For SCP Agency</h3>
+          <ul>
+            <li>Create a landing page for a dealership spring sales event using SCP branding.</li>
+            <li>Build a case study page showing how our agency improves organic social results.</li>
+            <li>Make a lead capture page for a free audit offer and deploy it to Vercel.</li>
+          </ul>
+        </div>
+        <div class="prompt-card">
+          <h3>For Social Grenade</h3>
+          <ul>
+            <li>Create a training signup page for an Academy session using Social Grenade branding.</li>
+            <li>Build a product explainer page for dealership salespeople and push it live.</li>
+            <li>Make a page for a guest speaker event and connect it to GitHub + Vercel.</li>
+          </ul>
+        </div>
+        <div class="prompt-card">
+          <h3>For Internal Use</h3>
+          <ul>
+            <li>Create an internal team resource page documenting a workflow.</li>
+            <li>Build a recruiting page for one of Robin’s businesses.</li>
+            <li>Turn this outline into a polished web page and deploy it live.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="footer">
+    <div class="container">
+      <div class="eyebrow">Built with Social Grenade Branding</div>
+      <h2>Lucy Can Help the Team Ship</h2>
+      <p>
+        If the team has an idea for a web page, Lucy can help turn it into an actual site, get it into GitHub, and deploy it to Vercel. That means less friction, faster first drafts, and a cleaner path from concept to launch.
+      </p>
+      <div class="small">Strategy → Build → GitHub → Vercel → Live</div>
+    </div>
+  </section>
+</body>
+</html>
